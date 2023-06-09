@@ -45,51 +45,50 @@ for traner_num in range(1,7):
     # 担当者名を取得する
     traner_name = driver.find_element(by=By.XPATH, value='//*[@id="__layout"]/div/div[1]/section/section/div[2]/div[3]/div[2]/div/div[2]').text
 
-    if traner_name == '千葉慎也' or traner_name == '和田健杜':
-        # 日付、曜日を取得する
-        day_list = []
-        for day in range(2,9):
-            get_day = driver.find_element(by=By.XPATH, value='//*[@id="__layout"]/div/div[1]/section/section/div[2]/div[3]/div[3]/div/div[1]/div[2]/div/div[' + str(day) + ']')
-            day_text = get_day.text
-            # 改行コードを削除する
-            day_text = "".join(day_text.splitlines())
-            day_list.append(day_text)
+    # 日付、曜日を取得する
+    day_list = []
+    for day in range(2,9):
+        get_day = driver.find_element(by=By.XPATH, value='//*[@id="__layout"]/div/div[1]/section/section/div[2]/div[3]/div[3]/div/div[1]/div[2]/div/div[' + str(day) + ']')
+        day_text = get_day.text
+        # 改行コードを削除する
+        day_text = "".join(day_text.splitlines())
+        day_list.append(day_text)
 
-        # 時間のリストを取得する
-        time_list = []
-        for time_value in range(1,33):
-            get_time_value = driver.find_element(by=By.XPATH, value='//*[@id="__layout"]/div/div[1]/section/section/div[2]/div[3]/div[3]/div/div[2]/div/div[' + str(time_value) + ']/div[1]')
-            time_value_text = get_time_value.text
-            time_list.append(time_value_text)
+    # 時間のリストを取得する
+    time_list = []
+    for time_value in range(1,33):
+        get_time_value = driver.find_element(by=By.XPATH, value='//*[@id="__layout"]/div/div[1]/section/section/div[2]/div[3]/div[3]/div/div[2]/div/div[' + str(time_value) + ']/div[1]')
+        time_value_text = get_time_value.text
+        time_list.append(time_value_text)
 
-        # 日にちごとの空き状況リストを作成する
-        availability_list = []
-        for week in range(2,9):
-            # 一時テーブルなので、随時初期化
-            availability_list_unit = []
-            for availability in range(1,33):
-                # 1日分
-                get_availability = driver.find_element(by=By.XPATH, value='//*[@id="__layout"]/div/div[1]/section/section/div[2]/div[3]/div[3]/div/div[2]/div/div[' + str(availability) + ']/div[' + str(week) + ']')
-                availability_text = get_availability.text
-                # 予約可能な場合、値が入っていないので、「担当者」を代入してあげる
-                if availability_text == '':
-                    availability_text = traner_name
-                availability_list_unit.append(availability_text)
-            availability_list.append(availability_list_unit)
+    # 日にちごとの空き状況リストを作成する
+    availability_list = []
+    for week in range(2,9):
+        # 一時テーブルなので、随時初期化
+        availability_list_unit = []
+        for availability in range(1,33):
+            # 1日分
+            get_availability = driver.find_element(by=By.XPATH, value='//*[@id="__layout"]/div/div[1]/section/section/div[2]/div[3]/div[3]/div/div[2]/div/div[' + str(availability) + ']/div[' + str(week) + ']')
+            availability_text = get_availability.text
+            # 予約可能な場合、値が入っていないので、「担当者」を代入してあげる
+            if availability_text == '':
+                availability_text = traner_name
+            availability_list_unit.append(availability_text)
+        availability_list.append(availability_list_unit)
 
-        # 日付、時間、空き状況のリストを作る
-        data_list_all = pd.DataFrame(data=availability_list,index=day_list,columns=time_list)
+    # 日付、時間、空き状況のリストを作る
+    data_list_all = pd.DataFrame(data=availability_list,index=day_list,columns=time_list)
 
-        list_index = []
-        list_columns = []
-        list_index = list(data_list_all.index)
-        list_columns = list(data_list_all.columns)
+    list_index = []
+    list_columns = []
+    list_index = list(data_list_all.index)
+    list_columns = list(data_list_all.columns)
 
-        for index_name in list_index:
-            for columns_name in list_columns:
-                list_value = data_list_all.at[index_name, columns_name]
-                if list_value != '-':
-                    data_list.append(index_name + " " + columns_name + ":" + list_value)
+    for index_name in list_index:
+        for columns_name in list_columns:
+            list_value = data_list_all.at[index_name, columns_name]
+            if list_value != '-':
+                data_list.append(index_name + " " + columns_name + ":" + list_value)
 
     # 担当者を閉じる
     click_close = driver.find_element(by=By.XPATH, value='//*[@id="__layout"]/div/div[1]/section/section/div[2]/div[3]/div[2]/div')
